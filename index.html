@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Fat Loss Program</title>
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fat Loss">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230E0E0E'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-family='Arial Black,sans-serif' font-weight='900' font-size='260' fill='%23E8FF47'%3EFL%3C/text%3E%3C/svg%3E">
+
+  <!-- Android PWA Manifest (inline) -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Fat%20Loss%20Program%22%2C%22short_name%22%3A%22Fat%20Loss%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230E0E0E%22%2C%22theme_color%22%3A%22%230E0E0E%22%7D">
+  <meta name="theme-color" content="#0E0E0E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --accent:#E8FF47;--dark:#0E0E0E;--card:#161616;
+      --muted:#888;--border:#242424;
+    }
+    html{background:var(--dark)}
+    body{background:var(--dark);color:#f0f0f0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+    .container{max-width:720px;margin:0 auto;padding:24px 16px 80px}
+
+    /* HERO */
+    .hero{text-align:center;padding:40px 0 28px}
+    .hero-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+    .hero-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(52px,14vw,80px);line-height:.92;color:#fff;margin-bottom:6px}
+    .hero-title span{color:var(--accent)}
+    .hero-sub{font-size:13px;color:var(--muted);margin-top:12px}
+
+    /* TABS */
+    .tabs{display:flex;gap:3px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:24px;border:1px solid var(--border);position:sticky;top:8px;z-index:10}
+    .tab{flex:1;padding:9px 4px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .tab.active{background:var(--accent);color:var(--dark);font-weight:700}
+
+    /* PANELS */
+    .panel{display:none}.panel.active{display:block}
+
+    /* TYPOGRAPHY */
+    .sec-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:28px;letter-spacing:1px;color:#fff;margin-bottom:4px}
+    .sec-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+
+    /* CARDS */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+    .card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+
+    /* STATS GRID */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .stat{background:#1c1c1c;border-radius:10px;padding:14px;border:1px solid var(--border)}
+    .stat-val{font-family:'Bebas Neue',Impact,sans-serif;font-size:30px;color:var(--accent);line-height:1}
+    .stat-unit{font-size:12px;color:var(--muted);margin-left:2px}
+    .stat-label{font-size:11px;color:var(--muted);margin-top:4px}
+
+    /* MACRO BARS */
+    .macro-bar{margin-bottom:14px}
+    .macro-row{display:flex;justify-content:space-between;margin-bottom:5px}
+    .macro-name{font-size:13px;font-weight:500}
+    .macro-val{font-size:12px;color:var(--muted)}
+    .bar-bg{height:7px;background:#242424;border-radius:99px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:99px}
+
+    /* ALERTS */
+    .note{background:#1a1f0a;border:1px solid #3a4f10;border-radius:10px;padding:13px 15px;font-size:13px;color:#c8e060;line-height:1.6;margin-bottom:12px}
+    .note strong{color:var(--accent)}
+    .tip{background:#0f1a1a;border:1px solid #1a3535;border-radius:10px;padding:12px 15px;font-size:13px;color:#7ecece;line-height:1.6;margin-bottom:10px}
+    .warn{background:#1a110a;border:1px solid #4a2e0e;border-radius:10px;padding:12px 15px;font-size:13px;color:#e0a060;line-height:1.6;margin-bottom:10px}
+
+    /* ACCORDION */
+    .acc{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+    .acc-header{display:flex;align-items:center;padding:14px 16px;cursor:pointer;user-select:none;gap:10px;-webkit-tap-highlight-color:transparent}
+    .acc-badge{font-family:'Bebas Neue',Impact,sans-serif;font-size:12px;letter-spacing:1px;padding:3px 9px;border-radius:6px;white-space:nowrap}
+    .acc-badge.gym{background:var(--accent);color:var(--dark)}
+    .acc-badge.run{background:#1a1a2e;border:1px solid #3a3a8a;color:#7090ff}
+    .acc-title{font-weight:600;font-size:14px;flex:1}
+    .acc-focus{font-size:11px;color:var(--muted)}
+    .chevron{color:var(--muted);font-size:14px;transition:transform .2s;flex-shrink:0}
+    .chevron.open{transform:rotate(180deg)}
+    .acc-body{display:none;padding:0 16px 14px}
+    .acc-body.open{display:block}
+
+    /* EXERCISES */
+    .ex-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+    .ex-row:last-of-type{border-bottom:none}
+    .ex-num{font-family:'Bebas Neue',Impact,sans-serif;font-size:16px;color:#333;min-width:20px;text-align:right;padding-top:1px}
+    .ex-info{flex:1}
+    .ex-name{font-size:13px;font-weight:500;margin-bottom:2px}
+    .ex-sets{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:2px}
+    .ex-note{font-size:12px;color:var(--muted);line-height:1.4}
+    .knee-tag{font-size:9px;background:#1a1100;border:1px solid #4a3000;color:#e0a040;padding:2px 5px;border-radius:4px;margin-left:5px;vertical-align:middle}
+    .cardio-note{margin-top:12px;padding:10px 12px;background:#111;border-radius:8px;font-size:12px;color:var(--muted)}
+
+    /* RUNNING STATS */
+    .run-stats{margin-bottom:10px}
+    .run-stat{display:inline-block;background:#111;border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:12px;color:#7090ff;margin-right:6px;margin-bottom:6px;font-weight:500}
+    .run-session{font-weight:600;font-size:14px;margin-bottom:8px;color:#fff}
+    .run-detail{font-size:13px;color:var(--muted);line-height:1.6}
+
+    /* MEAL ROWS */
+    .meal-row{padding:13px 0;border-bottom:1px solid var(--border)}
+    .meal-row:last-child{border-bottom:none}
+    .meal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+    .meal-time{font-weight:600;font-size:14px}
+    .meal-tag{font-size:10px;color:var(--muted);background:#222;padding:2px 7px;border-radius:4px;margin-left:7px}
+    .meal-kcal{font-size:13px;color:var(--accent);font-weight:700}
+    .meal-food{font-size:13px;color:#ccc;margin-bottom:3px}
+    .meal-note{font-size:12px;color:var(--muted)}
+    .meal-total{margin-top:12px;padding:10px 12px;background:#111;border-radius:8px;font-size:12px;color:var(--muted)}
+
+    /* WEEK GRID */
+    .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+    .week-cell{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+    .week-cell.gym{background:var(--accent);color:var(--dark)}
+    .week-cell.run{background:#1a1a2e;color:#7090ff;border:1px solid #2a2a5a}
+    .week-cell.rest{background:#1a1a1a;color:#444;border:1px solid var(--border)}
+    .week-label{font-size:10px;color:var(--muted);text-align:center}
+    .legend{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+    .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+    .legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+
+    /* TIMELINE */
+    .timeline{display:flex;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+    .tl-item{flex:1;text-align:center;position:relative;min-width:60px}
+    .tl-item:not(:last-child)::after{content:'';position:absolute;top:15px;left:50%;width:100%;height:2px;background:var(--border);z-index:0}
+    .tl-dot{width:30px;height:30px;border-radius:50%;background:#222;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 7px;font-size:11px;position:relative;z-index:1}
+    .tl-dot.done{background:var(--accent);border-color:var(--accent);color:var(--dark);font-weight:700}
+    .tl-label{font-size:10px;color:var(--muted)}
+    .tl-val{font-size:12px;font-weight:600;color:#fff;margin-top:2px}
+
+    /* RULES */
+    .rule-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+    .rule-row:last-child{border-bottom:none}
+    .rule-num{font-family:'Bebas Neue',Impact,sans-serif;font-size:20px;color:var(--accent);min-width:22px;line-height:1.1}
+    .rule-text{font-size:13px;line-height:1.5}
+
+    /* RUNNING RULES */
+    .rr-row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+    .rr-row:last-child{border-bottom:none}
+    .rr-icon{font-size:18px;min-width:26px}
+    .rr-rule{font-weight:600;font-size:13px;margin-bottom:3px}
+    .rr-detail{font-size:12px;color:var(--muted);line-height:1.5}
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-label">Personalised Program — Fahad</div>
+    <div class="hero-title">FAT LOSS<br><span>MADE SIMPLE</span></div>
+    <div class="hero-sub">Evidence-based · 4-day gym · 31 kg to goal</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('nutrition',this)">📊 Nutrition</button>
+    <button class="tab" onclick="switchTab('training',this)">💪 Training</button>
+    <button class="tab" onclick="switchTab('running',this)">🏃 Running</button>
+    <button class="tab" onclick="switchTab('schedule',this)">🗓 Schedule</button>
+  </div>
+
+  <!-- ═══════════════ NUTRITION ═══════════════ -->
+  <div id="panel-nutrition" class="panel active">
+    <div class="sec-title">NUTRITION PLAN</div>
+    <div class="sec-sub">Based on your TDEE · Flexible dieting approach</div>
+
+    <div class="stats-grid">
+      <div class="stat"><div><span class="stat-val">2,900</span><span class="stat-unit">kcal</span></div><div class="stat-label">Your TDEE (maintenance)</div></div>
+      <div class="stat"><div><span class="stat-val">2,300</span><span class="stat-unit">kcal</span></div><div class="stat-label">Daily target (−600 deficit)</div></div>
+      <div class="stat"><div><span class="stat-val">~0.5</span><span class="stat-unit">kg/wk</span></div><div class="stat-label">Expected fat loss rate</div></div>
+      <div class="stat"><div><span class="stat-val">~14</span><span class="stat-unit">months</span></div><div class="stat-label">Realistic timeline to 84 kg</div></div>
+    </div>
+
+    <div class="note"><strong>Note on your previous 2,000 cal target:</strong> Too aggressive for your size — a 900 cal deficit increases muscle loss and is hard to sustain. <strong>2,300 cal</strong> is optimal: meaningful deficit, but you keep muscle, energy, and sanity.</div>
+
+    <div class="card">
+      <div class="card-title">Daily Macronutrient Targets</div>
+      <div class="macro-bar">
+        <div class="macro-row"><span class="macro-name">Protein</span><span class="macro-val">200g · 800 kcal</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:35%;background:#E8FF47"></div></div>
+      </div>
+      <div class="macro-bar">
+        <div class="macro-row"><span class="macro-name">Carbohydrates</span><span class="macro-val">215g · 860 kcal</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:37%;background:#60bfff"></div></div>
+      </div>
+      <div class="macro-bar" style="margin-bottom:8px">
+        <div class="macro-row"><span class="macro-name">Fats</span><span class="macro-val">70g · 630 kcal</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:27%;background:#ff9060"></div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">Protein is the priority — hit 200g first. Carbs and fats can flex.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Meal Structure — 2 Meals + Snack</div>
+      <div class="meal-row">
+        <div class="meal-head"><div><span class="meal-time">Breakfast</span><span class="meal-tag">Morning</span></div><div class="meal-kcal">~900 kcal</div></div>
+        <div class="meal-food">4 eggs + 2–3 roti + full-fat yoghurt + fruit</div>
+        <div class="meal-note">Your biggest meal. Load protein here — sets you up for the day.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-head"><div><span class="meal-time">Lunch</span><span class="meal-tag">Midday</span></div><div class="meal-kcal">~950 kcal</div></div>
+        <div class="meal-food">Chicken/beef + generous rice or 2 roti + salad + dal</div>
+        <div class="meal-note">Second anchor meal. Don't go light here — this carries you to evening.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-head"><div><span class="meal-time">Evening Snack</span><span class="meal-tag">Pre/post walk</span></div><div class="meal-kcal">~400 kcal</div></div>
+        <div class="meal-food">Greek yoghurt + handful of nuts, or protein shake + fruit</div>
+        <div class="meal-note">Times well with your 4 km walk. Keeps hunger in check overnight.</div>
+      </div>
+      <div class="meal-total">Total: ~2,250 kcal — leave ~50 cal buffer for chai, small bites.</div>
+    </div>
+
+    <div class="tip">💡 <strong>Protein tips (halal-friendly):</strong> Chicken breast, beef mince, eggs, Greek yoghurt, cottage cheese, lentils, chickpeas. If you're short, a halal whey protein shake fills the gap easily.</div>
+    <div class="tip">💡 <strong>No food is banned.</strong> Biryani, gulab jamun, chai — they fit. Just account for them in your daily calories. Eat out confidently — estimate, don't stress, move on.</div>
+    <div class="tip">💡 <strong>Two meals a day naturally compresses your eating window.</strong> This reduces overall appetite — use that to your advantage, don't fight it.</div>
+    <div class="warn">⚠️ <strong>Don't skip breakfast to save calories.</strong> You need the fuel for gym days. Treat it as your biggest meal.</div>
+  </div>
+
+  <!-- ═══════════════ TRAINING ═══════════════ -->
+  <div id="panel-training" class="panel">
+    <div class="sec-title">TRAINING PLAN</div>
+    <div class="sec-sub">4-Day Upper/Lower Split · Full Gym · Knee-aware</div>
+
+    <div class="note"><strong>Left knee tightness:</strong> Exercises marked <span style="background:#1a1100;border:1px solid #4a3000;color:#e0a040;padding:1px 5px;border-radius:4px;font-size:10px">knee</span> have modified instructions. Prioritise hamstring and hip strengthening — this directly reduces patellar tendon stress. Warm up with 5 min cycling before every session.</div>
+
+    <!-- DAY 1 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge gym">DAY 1</span>
+        <span class="acc-title">Upper — Push</span>
+        <span class="acc-focus">Chest · Shoulders · Triceps</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="ex-row"><div class="ex-num">1</div><div class="ex-info"><div class="ex-name">Barbell Bench Press</div><div class="ex-sets">4 × 8</div><div class="ex-note">Controlled descent, 2-sec pause at chest. Primary strength movement.</div></div></div>
+        <div class="ex-row"><div class="ex-num">2</div><div class="ex-info"><div class="ex-name">Incline Dumbbell Press</div><div class="ex-sets">3 × 10</div><div class="ex-note">45° incline. Full stretch at the bottom.</div></div></div>
+        <div class="ex-row"><div class="ex-num">3</div><div class="ex-info"><div class="ex-name">Seated Dumbbell Shoulder Press</div><div class="ex-sets">3 × 10</div><div class="ex-note">Don't lock elbows at the top.</div></div></div>
+        <div class="ex-row"><div class="ex-num">4</div><div class="ex-info"><div class="ex-name">Cable Lateral Raises</div><div class="ex-sets">3 × 14</div><div class="ex-note">Slow and controlled — no swinging. Feels light, do it properly.</div></div></div>
+        <div class="ex-row"><div class="ex-num">5</div><div class="ex-info"><div class="ex-name">Tricep Rope Pushdown</div><div class="ex-sets">3 × 12</div><div class="ex-note">Spread the rope at the bottom. Full extension.</div></div></div>
+        <div class="ex-row"><div class="ex-num">6</div><div class="ex-info"><div class="ex-name">Overhead Tricep Extension (cable)</div><div class="ex-sets">3 × 12</div><div class="ex-note">Keeps long head stretched — better growth.</div></div></div>
+        <div class="cardio-note">+ 15–20 min cycling or elliptical after lifting (Zone 2, moderate pace)</div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge gym">DAY 2</span>
+        <span class="acc-title">Lower — Quad Focus</span>
+        <span class="acc-focus">Quads · Calves · Core</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="ex-row"><div class="ex-num">1</div><div class="ex-info"><div class="ex-name">Leg Press<span class="knee-tag">knee</span></div><div class="ex-sets">4 × 12</div><div class="ex-note">Limit range to 90°. Do NOT let knees cave inward. Feet shoulder-width.</div></div></div>
+        <div class="ex-row"><div class="ex-num">2</div><div class="ex-info"><div class="ex-name">Leg Extension (light)<span class="knee-tag">knee</span></div><div class="ex-sets">3 × 15</div><div class="ex-note">Light weight only — strengthens the VMO which directly helps your knee tightness.</div></div></div>
+        <div class="ex-row"><div class="ex-num">3</div><div class="ex-info"><div class="ex-name">Seated Leg Curl</div><div class="ex-sets">3 × 12</div><div class="ex-note">Full range of motion. Great antagonist balance for the knee.</div></div></div>
+        <div class="ex-row"><div class="ex-num">4</div><div class="ex-info"><div class="ex-name">Goblet Squat<span class="knee-tag">knee</span></div><div class="ex-sets">3 × 12</div><div class="ex-note">Heels elevated slightly on plates if needed. Stop at parallel — no deep squat.</div></div></div>
+        <div class="ex-row"><div class="ex-num">5</div><div class="ex-info"><div class="ex-name">Seated Calf Raise</div><div class="ex-sets">4 × 15</div><div class="ex-note">Full stretch at the bottom. Pause at the top.</div></div></div>
+        <div class="ex-row"><div class="ex-num">6</div><div class="ex-info"><div class="ex-name">Cable Crunch</div><div class="ex-sets">3 × 15</div><div class="ex-note">Controlled — don't use momentum.</div></div></div>
+        <div class="cardio-note">+ 15–20 min cycling or elliptical after lifting (Zone 2, moderate pace)</div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge gym">DAY 3</span>
+        <span class="acc-title">Upper — Pull</span>
+        <span class="acc-focus">Back · Biceps · Rear Delts</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="ex-row"><div class="ex-num">1</div><div class="ex-info"><div class="ex-name">Lat Pulldown (wide grip)</div><div class="ex-sets">4 × 10</div><div class="ex-note">Pull to upper chest. Don't lean back excessively.</div></div></div>
+        <div class="ex-row"><div class="ex-num">2</div><div class="ex-info"><div class="ex-name">Seated Cable Row (close grip)</div><div class="ex-sets">3 × 10</div><div class="ex-note">Elbows close to body. Squeeze shoulder blades together at the end.</div></div></div>
+        <div class="ex-row"><div class="ex-num">3</div><div class="ex-info"><div class="ex-name">Single-Arm Dumbbell Row</div><div class="ex-sets">3 × 10 each</div><div class="ex-note">Brace on the bench. Full stretch at the bottom. Big range of motion.</div></div></div>
+        <div class="ex-row"><div class="ex-num">4</div><div class="ex-info"><div class="ex-name">Face Pull (rope, cable)</div><div class="ex-sets">3 × 15</div><div class="ex-note">Critical for shoulder health. Pull to your ears, not your chin.</div></div></div>
+        <div class="ex-row"><div class="ex-num">5</div><div class="ex-info"><div class="ex-name">Barbell or Dumbbell Curl</div><div class="ex-sets">3 × 12</div><div class="ex-note">Don't swing. Supinate at the top.</div></div></div>
+        <div class="ex-row"><div class="ex-num">6</div><div class="ex-info"><div class="ex-name">Hammer Curl</div><div class="ex-sets">3 × 12</div><div class="ex-note">Neutral grip. Targets brachialis for thicker-looking arms.</div></div></div>
+        <div class="cardio-note">+ 15–20 min cycling or elliptical after lifting (Zone 2, moderate pace)</div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge gym">DAY 4</span>
+        <span class="acc-title">Lower — Hip Focus</span>
+        <span class="acc-focus">Glutes · Hamstrings · Posterior Chain</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="ex-row"><div class="ex-num">1</div><div class="ex-info"><div class="ex-name">Conventional Deadlift<span class="knee-tag">knee</span></div><div class="ex-sets">4 × 6</div><div class="ex-note">Hinge at hips, neutral spine. Knees track over toes on the way up. Main compound lift today.</div></div></div>
+        <div class="ex-row"><div class="ex-num">2</div><div class="ex-info"><div class="ex-name">Romanian Deadlift (RDL)</div><div class="ex-sets">3 × 10</div><div class="ex-note">Slow and hinge-focused. Feel the hamstrings stretch. Keep the bar close to your legs.</div></div></div>
+        <div class="ex-row"><div class="ex-num">3</div><div class="ex-info"><div class="ex-name">Hip Thrust (barbell)</div><div class="ex-sets">4 × 10</div><div class="ex-note">Shoulders on bench, drive through heels. Zero knee stress. Excellent for glutes.</div></div></div>
+        <div class="ex-row"><div class="ex-num">4</div><div class="ex-info"><div class="ex-name">Nordic Curl or Lying Leg Curl</div><div class="ex-sets">3 × 10</div><div class="ex-note">Slow eccentric. Hamstring work is your best insurance for that left knee.</div></div></div>
+        <div class="ex-row"><div class="ex-num">5</div><div class="ex-info"><div class="ex-name">Single-Leg Press (light)<span class="knee-tag">knee</span></div><div class="ex-sets">3 × 10 each</div><div class="ex-note">Controlled. If the knee tightness flares, skip this today — no ego.</div></div></div>
+        <div class="ex-row"><div class="ex-num">6</div><div class="ex-info"><div class="ex-name">Standing Calf Raise</div><div class="ex-sets">4 × 15</div><div class="ex-note">Full range. Pause at the top and the bottom.</div></div></div>
+        <div class="cardio-note">+ 15–20 min cycling or elliptical after lifting (Zone 2, moderate pace)</div>
+      </div>
+    </div>
+
+    <div class="tip">💡 <strong>Progressive overload:</strong> Every week, try to add 1 rep or a small amount of weight to your main lifts. That's the only metric that matters for muscle retention during fat loss.</div>
+    <div class="tip">💡 <strong>Your evening walks</strong> still happen every day. On gym days, the gym + cardio is your session. Walk in the evening regardless.</div>
+  </div>
+
+  <!-- ═══════════════ RUNNING ═══════════════ -->
+  <div id="panel-running" class="panel">
+    <div class="sec-title">RUNNING PLAN</div>
+    <div class="sec-sub">10K comeback · Knee-smart progression · 5 phases</div>
+
+    <div class="note"><strong>Context:</strong> You ran a 10K a year ago so your aerobic base isn't zero — but at 115 kg, your joints need a re-entry period. This plan gets you back to 10K in ~4 months. Running happens on <strong>Wed + Sat</strong>, replacing your walks those days.</div>
+
+    <!-- Phase 1 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge run">PHASE 1</span>
+        <span class="acc-title">Re-entry</span>
+        <span class="acc-focus">Weeks 1–2</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="run-stats"><span class="run-stat">📍 ~3.5 km</span><span class="run-stat">📅 Weeks 1–2</span></div>
+        <div class="run-session">Run 2 min / Walk 2 min × 8 rounds</div>
+        <div class="run-detail">Your lungs will be ready before your joints. Don't push pace. This phase is about re-conditioning tendons and knees at 115 kg body weight.</div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge run">PHASE 2</span>
+        <span class="acc-title">Building Base</span>
+        <span class="acc-focus">Weeks 3–4</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="run-stats"><span class="run-stat">📍 ~4 km</span><span class="run-stat">📅 Weeks 3–4</span></div>
+        <div class="run-session">Run 3 min / Walk 1 min × 7 rounds</div>
+        <div class="run-detail">Pace should be conversational — if you can't hold a sentence, slow down. No heroics at this stage.</div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge run">PHASE 3</span>
+        <span class="acc-title">Continuous Run</span>
+        <span class="acc-focus">Weeks 5–7</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="run-stats"><span class="run-stat">📍 ~4–4.5 km</span><span class="run-stat">📅 Weeks 5–7</span></div>
+        <div class="run-session">20–25 min continuous easy run</div>
+        <div class="run-detail">First time running without walk breaks in over a year. Keep it very easy. This is a milestone — don't celebrate it by going faster.</div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge run">PHASE 4</span>
+        <span class="acc-title">5K Target</span>
+        <span class="acc-focus">Weeks 8–11</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="run-stats"><span class="run-stat">📍 ~5 km</span><span class="run-stat">📅 Weeks 8–11</span></div>
+        <div class="run-session">30 min continuous, 3× per week</div>
+        <div class="run-detail">By now you'll be ~108 kg — significantly easier on your knees. Add a third run session on Sunday (easy jog). Park run on a Saturday is a great milestone to target.</div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="acc">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-badge run">PHASE 5</span>
+        <span class="acc-title">Back to 10K</span>
+        <span class="acc-focus">Month 4+</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="run-stats"><span class="run-stat">📍 Build to 8–10 km</span><span class="run-stat">📅 Month 4+</span></div>
+        <div class="run-session">Long run Saturday · Two shorter runs midweek</div>
+        <div class="run-detail">At ~100 kg your old 10K form comes back fast. Register for a race — giving yourself a date is one of the most powerful motivation tools available. You've done a 10K before; you'll do it again, lighter.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:4px">
+      <div class="card-title">Running Rules for the Knee</div>
+      <div class="rr-row"><div class="rr-icon">👟</div><div><div class="rr-rule">Shoes first</div><div class="rr-detail">If your running shoes are over 18 months old, replace them. At 115 kg, cushioning compresses faster. This is the single most important injury-prevention step.</div></div></div>
+      <div class="rr-row"><div class="rr-icon">🌡️</div><div><div class="rr-rule">Warm up every time</div><div class="rr-detail">5 min brisk walk, then leg swings, calf raises, and quad stretches before you run. Cold muscles at heavier body weight = recipe for the knee tightening up.</div></div></div>
+      <div class="rr-row"><div class="rr-icon">🐢</div><div><div class="rr-rule">Run slower than feels natural</div><div class="rr-detail">Your 10K muscle memory will push you to run at old pace. Resist it. Slow enough to hold a conversation — that's Zone 2 and it's where fat burning and endurance are built.</div></div></div>
+      <div class="rr-row"><div class="rr-icon">📉</div><div><div class="rr-rule">10% rule</div><div class="rr-detail">Never increase weekly distance by more than 10% from the previous week. Connective tissue adapts slower than cardio fitness — this is how you avoid shin splints and knee injuries.</div></div></div>
+      <div class="rr-row"><div class="rr-icon">🛑</div><div><div class="rr-rule">Pain vs tightness</div><div class="rr-detail">Tightness = expected, warm up and continue. Sharp or stabbing pain = stop immediately. A skipped session is nothing compared to a 6-week injury.</div></div></div>
+    </div>
+
+    <div class="warn">⚠️ After a hard Day 2 leg session on Tuesday, keep Wednesday's run genuinely easy. Don't stack a hard leg session with a hard run the next morning.</div>
+  </div>
+
+  <!-- ═══════════════ SCHEDULE ═══════════════ -->
+  <div id="panel-schedule" class="panel">
+    <div class="sec-title">WEEKLY SCHEDULE</div>
+    <div class="sec-sub">Full week at a glance</div>
+
+    <div class="card">
+      <div class="card-title">Week Overview</div>
+      <div class="week-grid">
+        <div class="week-cell gym">D1</div>
+        <div class="week-cell gym">D2</div>
+        <div class="week-cell run">🏃</div>
+        <div class="week-cell gym">D3</div>
+        <div class="week-cell gym">D4</div>
+        <div class="week-cell run">🏃</div>
+        <div class="week-cell rest">—</div>
+      </div>
+      <div class="week-grid">
+        <div class="week-label">Mon</div>
+        <div class="week-label">Tue</div>
+        <div class="week-label">Wed</div>
+        <div class="week-label">Thu</div>
+        <div class="week-label">Fri</div>
+        <div class="week-label">Sat</div>
+        <div class="week-label">Sun</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#E8FF47"></div>Gym session</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1a1a2e;border:1px solid #2a2a5a"></div>Run day</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1a1a1a;border:1px solid var(--border)"></div>Full rest</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Journey Milestones</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot done">✓</div><div class="tl-label">Start</div><div class="tl-val">115 kg</div></div>
+        <div class="tl-item"><div class="tl-dot">2</div><div class="tl-label">Month 3</div><div class="tl-val">~109 kg</div></div>
+        <div class="tl-item"><div class="tl-dot">3</div><div class="tl-label">Month 6</div><div class="tl-val">~103 kg</div></div>
+        <div class="tl-item"><div class="tl-dot">4</div><div class="tl-label">Month 10</div><div class="tl-val">~92 kg</div></div>
+        <div class="tl-item"><div class="tl-dot">5</div><div class="tl-label">Goal</div><div class="tl-val">84 kg</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Key Rules — The Short Version</div>
+      <div class="rule-row"><div class="rule-num">1</div><div class="rule-text">Hit 2,300 calories across breakfast, lunch, and your evening snack. Don't skip breakfast.</div></div>
+      <div class="rule-row"><div class="rule-num">2</div><div class="rule-text">4 gym sessions per week. Don't skip Day 2 and 4 — they protect your knee.</div></div>
+      <div class="rule-row"><div class="rule-num">3</div><div class="rule-text">Run Wed + Sat. Start with run/walk intervals — do not jump back to 10K pace.</div></div>
+      <div class="rule-row"><div class="rule-num">4</div><div class="rule-text">Evening walks on Mon, Tue, Thu, Fri. Every day you're not running, you're walking.</div></div>
+      <div class="rule-row"><div class="rule-num">5</div><div class="rule-text">No food is banned — fit it in your calories, don't fight it.</div></div>
+      <div class="rule-row"><div class="rule-num">6</div><div class="rule-text">Weigh yourself weekly, same day, same time. Ignore daily noise.</div></div>
+    </div>
+
+    <div class="warn">⚠️ <strong>Plateau warning:</strong> Around month 3–4, weight loss may slow as your TDEE drops. Reassess calories at that point (likely ~2,100) or increase walk/run distance.</div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function toggleAcc(header) {
+    const body = header.nextElementSibling;
+    const chevron = header.querySelector('.chevron');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    chevron.classList.toggle('open', !isOpen);
+  }
+
+  // Register service worker for offline support
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      const CACHE = 'fatless-v1';
+      self.addEventListener('install', e => {
+        self.skipWaiting();
+        e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
+      });
+      self.addEventListener('activate', e => {
+        e.waitUntil(clients.claim());
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(
+          caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+            return res;
+          }).catch(() => caches.match(e.request)))
+        );
+      });
+    `;
+    const blob = new Blob([swCode], {type: 'application/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(() => {});
+  }
+</script>
+</body>
+</html>
